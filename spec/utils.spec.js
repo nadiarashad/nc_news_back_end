@@ -43,90 +43,102 @@ describe('makeRefObj', () => {
     const array = [{ article_id: 1, title: 'A' }];
     expect(makeRefObj(array, 'title', 'article_id')).to.eql({ A: 1 })
   });
+  it('returns an array of multiple references when passed multiple objects', () => {
+    const array = [{ article_id: 1, title: 'A' },
+    { article_id: 2, title: 'B' },
+    { article_id: 3, title: 'C' },
+    { article_id: 4, title: 'D' }];
+    expect(makeRefObj(array, 'title', 'article_id')).to.eql({ A: 1, B: 2, C: 3, D: 4 })
+  });
+  it('returns an array of multiple references when passed multiple objects', () => {
+    const commentsArray = [
+      {
+        comment_id: 'Slaughterhouse-Five',
+        author: 'Kurt Vonnegut',
+        article_id: 1,
+        votes: 0,
+        created_at: '2020 18:53 etc',
+        body: 'abcdefg'
+      },
+      {
+        title: 'Blood Meridian',
+        author: 'anti-western',
+        article_id: 2,
+        votes: 0,
+        created_at: '2020 16:20 etc',
+        body: 'hijklmnop'
+      }
+    ];
+    expect(makeRefObj(commentsArray, 'author', 'article_id')).to.eql({ 'Kurt Vonnegut': 1, 'anti-western': 2 })
+  });
 });
 
 
 
 describe('formatComments', () => {
-  it('given an array of books, returns an array of book objects ', () => {
-    const books = [
-      {
-        title: 'Slaughterhouse-Five',
-        writtenBy: 'Kurt Vonnegut'
-      },
-      {
-        title: 'Blood Meridian',
-        genre: 'anti-western',
-        writtenBy: 'change my key'
-      }
+  it('given an array of comments, returns an array of updated objects ', () => {
+    const commentsArray = [
+      { name: "Grammatics", artist: "Grammatics", releaseYear: 2009 },
+      { name: "Kingdom of Rust", artist: "Doves", releaseYear: 2009 }
     ];
-    expect(formatComments(books, 'writtenBy', 'author')).to.be.an('Array');
-    expect(formatComments(books, 'writtenBy', 'author')).to.have.length(2);
-    expect(formatComments(books, 'writtenBy', 'author')[0]).to.be.an('Object')
+
+    const artistLookup = {
+      Grammatics: 9923,
+      Doves: 324
+    };
+
+    const actual = formatComments(commentsArray, artistLookup);
+    const expected = [
+      { name: "Grammatics", artistId: 9923, releaseYear: 2009 },
+      { name: "Kingdom of Rust", artistId: 324, releaseYear: 2009 }
+    ];
+
+
+
+    // const commentsArray = [
+    //   {
+    //     comment_id: 'Slaughterhouse-Five',
+    //     author: 'Kurt Vonnegut',
+    //     article_id: 25,
+    //     votes: 0,
+    //     created_at: '2020 18:53 etc',
+    //     body: 'abcdefg'
+    //   },
+    //   {
+    //     title: 'Blood Meridian',
+    //     author: 'Nadia Rashad',
+    //     article_id: 36,
+    //     votes: 0,
+    //     created_at: '2020 16:20 etc',
+    //     body: 'hijklmnop'
+    //   }
+    // ];
+
+    // const refObj = { 'Kurt Vonnegut': 1, 'Nadia Rashad': 2 }
+
+    // expect(formatComments(commentsArray, refObj, 'created_by', 'author')).to.eql([
+    //   {
+    //     comment_id: 'Slaughterhouse-Five',
+    //     created_by: 'Kurt Vonnegut',
+    //     article_id: 1,
+    //     votes: 0,
+    //     created_at: '2020 18:53 etc',
+    //     body: 'abcdefg'
+    //   },
+    //   {
+    //     title: 'Blood Meridian',
+    //     created_by: 'Nadia Rashad',
+    //     article_id: 2,
+    //     votes: 0,
+    //     created_at: '2020 16:20 etc',
+    //     body: 'hijklmnop'
+    //   }
+    // ])
+    // expect(formatComments(commentsArray, referenceObject)).to.be.an('Array');
+    // expect(formatComments(commentsArray, referenceObject)).to.have.length(2);
+    // expect(formatComments(commentsArray, referenceObject)[0]).to.be.an('Object')
   })
-  it('book objects in array have different reference to original book objects', () => {
-    const books = [
-      {
-        title: 'Slaughterhouse-Five',
-        writtenBy: 'Kurt Vonnegut'
-      },
-      {
-        title: 'Blood Meridian',
-        genre: 'anti-western',
-        writtenBy: 'change my key'
-      }
-    ];
-    expect(formatComments(books, 'writtenBy', 'author')[0]).to.not.equal(books[0]);
-  });
-  it('updates the key with the newKey', () => {
-    const books = [
-      {
-        title: 'Slaughterhouse-Five',
-        writtenBy: 'Kurt Vonnegut'
-      },
-      {
-        title: 'Blood Meridian',
-        genre: 'anti-western',
-        writtenBy: 'Nadia'
-      }
-    ];
-    expect(formatComments(books, 'writtenBy', 'author')).to.eql([
-      {
-        title: 'Slaughterhouse-Five',
-        author: 'Kurt Vonnegut'
-      },
-      {
-        title: 'Blood Meridian',
-        genre: 'anti-western',
-        author: 'Nadia'
-      }
-    ]);
-  });
-  it('original book array is not mutated', () => {
-    const books = [
-      {
-        title: 'Slaughterhouse-Five',
-        writtenBy: 'Kurt Vonnegut'
-      },
-      {
-        title: 'Blood Meridian',
-        genre: 'anti-western',
-        writtenBy: 'change my key'
-      }
-    ];
-    formatComments(books, 'writtenBy', 'author');
-    expect(books, 'writtenBy', 'author').to.eql([
-      {
-        title: 'Slaughterhouse-Five',
-        writtenBy: 'Kurt Vonnegut'
-      },
-      {
-        title: 'Blood Meridian',
-        genre: 'anti-western',
-        writtenBy: 'change my key'
-      }
-    ]);
-  });
+
 });
 
 

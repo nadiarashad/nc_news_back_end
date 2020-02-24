@@ -12,35 +12,35 @@ exports.formatDates = list => {
 
 
 
-exports.makeRefObj = (list, param1, param2) => {
+exports.makeRefObj = (array, param1, param2) => {
     let referenceObj = {}
-    for (let i = 0; i < list.length; i++) {
-        referenceObj[list[i][param1]] = list[i][param2]
+    for (let i = 0; i < array.length; i++) {
+        referenceObj[array[i][param1]] = array[i][param2]
     }
+    // console.log(referenceObj)
     return referenceObj
 };
 
-exports.formatComments = (commentsArray, referenceObject) => {
 
 
+exports.formatComments = (commentsArray, refObj, oldKey, newKey) => {
 
-    //comments, param1, param2
-    // const newArray = comments.map(arr => {
-    //     return { ...arr }
-    // })
+    // console.log(oldKey, 'oldkey')
+    // console.log(newKey, 'newKey')
+    // console.log(refObj)
 
-    // for (let i = 0; i < newArray.length; i++) {
-    //     newArray[i][referenceObject] = newArray[i][param1]
-    //     delete newArray[i][param1]
-    //     // console.log(newArray)
-    // }
-    // // console.log(newArray)
-    // return newArray
+    const newArray = [...commentsArray]
+
+    newArray.forEach(item => {
+        item[newKey] = refObj[newArray.oldKey];
+        delete item[oldKey];
+    })
+    // console.log(newArray, 'newArray')
+    return newArray
+
 };
 
 /*
-
-
 Each formatted comment must have:
 
 - Its `created_by` property renamed to an `author` key
