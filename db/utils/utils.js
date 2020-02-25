@@ -12,40 +12,30 @@ exports.formatDates = list => {
 
 
 
-exports.makeRefObj = (array, param1, param2) => {
+exports.makeRefObj = (array) => {
     let referenceObj = {}
     for (let i = 0; i < array.length; i++) {
-        referenceObj[array[i][param1]] = array[i][param2]
+        referenceObj[array[i].title] = array[i].article_id
     }
-    // console.log(referenceObj)
     return referenceObj
 };
 
 
 
-exports.formatComments = (commentsArray, refObj, oldKey, newKey) => {
+exports.formatComments = (comments, refObject) => {
 
-    // console.log(oldKey, 'oldkey')
-    // console.log(newKey, 'newKey')
-    // console.log(refObj)
+    const formattedComments = [];
+    comments.forEach(comment => {
+        formattedComments.push({ ...comment });
+    });
 
-    const newArray = [...commentsArray]
-
-    newArray.forEach(item => {
-        item[newKey] = refObj[newArray.oldKey];
-        delete item[oldKey];
-    })
-    // console.log(newArray, 'newArray')
-    return newArray
-
+    formattedComments.forEach(comment => {
+        comment.article_id = refObject[comment.belongs_to];
+        comment.author = comment.created_by;
+        comment.created_at = new Date(comment.created_at);
+        delete comment.belongs_to;
+        delete comment.created_by;
+    });
+    return formattedComments;
 };
 
-/*
-Each formatted comment must have:
-
-- Its `created_by` property renamed to an `author` key
-- Its `belongs_to` property renamed to an `article_id` key
-- The value of the new `article_id` key must be the id corresponding to the original title value provided
-- Its `created_at` value converted into a javascript date object
-- The rest of the comment's properties must be maintained
-*/

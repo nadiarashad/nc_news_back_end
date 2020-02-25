@@ -39,106 +39,83 @@ describe('formatDates', () => {
 });
 
 describe('makeRefObj', () => {
+  it('returns an empty object when passed an empt array', () => {
+    const array = []
+    expect(makeRefObj(array)).to.eql({})
+
+  });
   it('can take multiple arguments', () => {
     const array = [{ article_id: 1, title: 'A' }];
-    expect(makeRefObj(array, 'title', 'article_id')).to.eql({ A: 1 })
+    expect(makeRefObj(array)).to.eql({ A: 1 })
   });
   it('returns an array of multiple references when passed multiple objects', () => {
     const array = [{ article_id: 1, title: 'A' },
     { article_id: 2, title: 'B' },
     { article_id: 3, title: 'C' },
     { article_id: 4, title: 'D' }];
-    expect(makeRefObj(array, 'title', 'article_id')).to.eql({ A: 1, B: 2, C: 3, D: 4 })
-  });
-  it('returns an array of multiple references when passed multiple objects', () => {
-    const commentsArray = [
-      {
-        comment_id: 'Slaughterhouse-Five',
-        author: 'Kurt Vonnegut',
-        article_id: 1,
-        votes: 0,
-        created_at: '2020 18:53 etc',
-        body: 'abcdefg'
-      },
-      {
-        title: 'Blood Meridian',
-        author: 'anti-western',
-        article_id: 2,
-        votes: 0,
-        created_at: '2020 16:20 etc',
-        body: 'hijklmnop'
-      }
-    ];
-    expect(makeRefObj(commentsArray, 'author', 'article_id')).to.eql({ 'Kurt Vonnegut': 1, 'anti-western': 2 })
+    expect(makeRefObj(array)).to.eql({
+      A: 1, B: 2, C: 3, D: 4
+    })
   });
 });
 
 
 
 describe('formatComments', () => {
-  it('given an array of comments, returns an array of updated objects ', () => {
-    const commentsArray = [
-      { name: "Grammatics", artist: "Grammatics", releaseYear: 2009 },
-      { name: "Kingdom of Rust", artist: "Doves", releaseYear: 2009 }
+  it('returns an empty array when passed an empty array', () => {
+    const comments = []
+    const refObject = {}
+    expect(formatComments(comments, refObject)).to.eql([])
+  });
+  it('updates keys to new values and has the time at the correct format', () => {
+    const refObject = { "The vegan carnivore?": 1, "Harry potter": 2 };
+    const comments = [
+      {
+        body: "Maxime",
+        belongs_to: "The vegan carnivore?",
+        created_by: "jessjelly",
+        votes: 2,
+        created_at: 1474085868059
+      },
+      {
+        body: "Lord Volodomor",
+        belongs_to: "Harry potter",
+        created_by: "JK Rowling",
+        votes: 4,
+        created_at: 1574085868059
+      }
     ];
-
-    const artistLookup = {
-      Grammatics: 9923,
-      Doves: 324
-    };
-
-    const actual = formatComments(commentsArray, artistLookup);
-    const expected = [
-      { name: "Grammatics", artistId: 9923, releaseYear: 2009 },
-      { name: "Kingdom of Rust", artistId: 324, releaseYear: 2009 }
+    const actual = [
+      {
+        body: "Maxime",
+        votes: 2,
+        created_at: new Date(1474085868059),
+        article_id: 1,
+        author: "jessjelly"
+      },
+      {
+        body: "Lord Volodomor",
+        votes: 4,
+        created_at: new Date(1574085868059),
+        article_id: 2,
+        author: "JK Rowling"
+      }
     ];
-
-
-
-    // const commentsArray = [
-    //   {
-    //     comment_id: 'Slaughterhouse-Five',
-    //     author: 'Kurt Vonnegut',
-    //     article_id: 25,
-    //     votes: 0,
-    //     created_at: '2020 18:53 etc',
-    //     body: 'abcdefg'
-    //   },
-    //   {
-    //     title: 'Blood Meridian',
-    //     author: 'Nadia Rashad',
-    //     article_id: 36,
-    //     votes: 0,
-    //     created_at: '2020 16:20 etc',
-    //     body: 'hijklmnop'
-    //   }
-    // ];
-
-    // const refObj = { 'Kurt Vonnegut': 1, 'Nadia Rashad': 2 }
-
-    // expect(formatComments(commentsArray, refObj, 'created_by', 'author')).to.eql([
-    //   {
-    //     comment_id: 'Slaughterhouse-Five',
-    //     created_by: 'Kurt Vonnegut',
-    //     article_id: 1,
-    //     votes: 0,
-    //     created_at: '2020 18:53 etc',
-    //     body: 'abcdefg'
-    //   },
-    //   {
-    //     title: 'Blood Meridian',
-    //     created_by: 'Nadia Rashad',
-    //     article_id: 2,
-    //     votes: 0,
-    //     created_at: '2020 16:20 etc',
-    //     body: 'hijklmnop'
-    //   }
-    // ])
-    // expect(formatComments(commentsArray, referenceObject)).to.be.an('Array');
-    // expect(formatComments(commentsArray, referenceObject)).to.have.length(2);
-    // expect(formatComments(commentsArray, referenceObject)[0]).to.be.an('Object')
-  })
-
+    expect(formatComments(comments, refObject)).to.deep.equal([
+      {
+        article_id: 1,
+        author: "jessjelly",
+        body: "Maxime",
+        created_at: new Date(comments[0].created_at),
+        votes: 2
+      },
+      {
+        article_id: 2,
+        author: "JK Rowling",
+        body: "Lord Volodomor",
+        created_at: new Date(comments[1].created_at),
+        votes: 4
+      }
+    ]);
+  });
 });
-
-

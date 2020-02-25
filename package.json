@@ -11,8 +11,8 @@
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "seed-run": "npm run setup-dbs && knex seed:run",
-    "test": "npm run setup-dbs && mocha spec”",
-    "u-spec": "mocha spec db/spec/utils.spec.js"
+    "test": "mocha spec/endpoints.spec.js",
+    "u-spec": "mocha spec/utils.spec.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "knex": "^0.20.10",
     "pg": "^7.18.2"
   },
