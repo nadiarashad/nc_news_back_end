@@ -5,31 +5,24 @@ exports.pSQLErrorsHandler = (err, req, res, next) => {
 
         '42703': { status: 400, msg: 'Invalid request: missing required fields' }, // empty obj
         '23502': { status: 400, msg: 'Invalid request: missing required fields' }, // null
+        '42803': { status: 500, msg: 'Issue retrieving data' },
 
-        '22P02': { status: 400, msg: "Invalid input!" }
+        '22P02': { status: 400, msg: "Bad request: missing required fields" } //USED
         /* This is for url id of "banana" instead of number, 
         but also for age key in post having value "banana" not number. 
-        Is that too broad a category for this message to cover? */
+        */
 
         //'22P02': { status: 400, msg: '22P02 Invalid route: url or id not valid' } // string not num eg
     };
-    if (err.code !== undefined) {
+    if (err.code !== undefined) { // USED
         res.status(errCodes[err.code].status).send({ msg: errCodes[err.code].msg });
     } else next(err)
 };
 
 
-exports.handleCustomErrors = (err, req, res, next) => { // handles status, custom errors, that i've written
+exports.handleCustomErrors = (err, req, res, next) => { //USED
     if (err.status !== undefined) {
         res.status(err.status).send({ msg: err.msg })
-    }
-    else next(err)
-}
-
-
-exports.handleVeryWeirdDefinitelyWrongErrors = (err, req, res, next) => { // handles status, custom erors, that iv'e written
-    if (err.toString() !== '[object Object]') {
-        res.status(404).send({ msg: `Here is a custom message from a strange error: ${err.toString()}` })
     }
     else next(err)
 }
@@ -41,6 +34,10 @@ exports.handle405s = (req, res, next) => {
 }
 
 
-exports.handle404s = (req, res, next) => {
+exports.handle404s = (req, res, next) => { //USED
     res.status(404).send({ msg: 'Route not found' })
+}
+
+exports.handle500s = (req, res, next) => {
+    res.status(500).send({ msg: 'There seems to be an issue with the server, please try again later' })
 }
