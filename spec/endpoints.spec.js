@@ -168,8 +168,17 @@ describe('/api', () => {
                         expect(res.body.msg).to.eql('Invalid request: missing required fields')
                     })
             });
+            it('POST: 400 responds with an error when entering an invalid path', () => {
+                return request(app)
+                    .post('/api/articles/banana/comments')
+                    .send({ username: 'butter_bridge', body: "Hello, I'm in the middle of my backend review" })
+                    .expect(400)
+                    .then(res => {
+                        expect(res.body.msg).to.eql('Bad request: missing required fields')
+                    })
+            });
         });
-        it.only('GET: 200 responds with an array of comments for the given article_id', () => {
+        it('GET: 200 responds with an array of comments for the given article_id', () => {
             return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
@@ -178,7 +187,7 @@ describe('/api', () => {
                     res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
                 })
         });
-        it.only('GET: 200 responds with an array of comments for the given article id sorted by a given column, defaulting to created_at', () => {
+        it('GET: 200 responds with an array of comments for the given article id sorted by a given column, defaulting to created_at', () => {
             return request(app)
                 .get('/api/articles/1/comments?sort_by=author&&order_by=desc')
                 .expect(200)
@@ -187,8 +196,57 @@ describe('/api', () => {
                     res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
                     expect(res.body.comments).to.be.sortedBy('author', { descending: true })
                 })
-
-
+        });
+        it('GET: 400 responds with an error when entering an invalid path', () => {
+            return request(app)
+                .get('/api/articles/banana/comments?sort_by=author&&order_by=desc')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Bad request: missing required fields')
+                })
+        });
+        it('GET: 404 Responds error when id valid but no correspond.', () => {
+            return request(app)
+                .get('/api/articles/9999/comments?sort_by=author&&order_by=desc')
+                .expect(404)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid ID - does not match')
+                })
+        });
+        it('GET: 400 responds with error when inputting invalid sort_by query', () => {
+            return request(app)
+                .get('/api/articles/1/comments?sort_by=potato&&order_by=desc')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid request: missing required fields')
+                })
+        });
+        it('GET: 200 will default sorted_by to "created_at" when no sort query is given', () => {
+            return request(app)
+                .get('/api/articles/1/comments?order_by=desc')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.comments).to.be.an('Array')
+                    res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
+                })
+        });
+        it('GET: 200 can sort by ascending when requesting asc in the query', () => {
+            return request(app)
+                .get('/api/articles/1/comments?order_by=ascending')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.comments).to.be.an('Array')
+                    res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
+                })
+        });
+        it('GET: 200 can return all comments when no query is entered with default to sorted by "created at" and ordered by descending', () => {
+            return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.comments).to.be.an('Array')
+                    res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
+                })
         });
 
     });

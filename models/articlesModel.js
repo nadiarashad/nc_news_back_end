@@ -56,7 +56,7 @@ exports.createArticle = (comment) => {
 }
 
 exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
-    // console.log('in model')
+    console.log('in model')
     // console.log(sort_by, 'sortby')
 
     return knex
@@ -65,8 +65,10 @@ exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
         .where('comments.article_id', article_id)
         .orderBy(sort_by || 'created_at', order_by || 'descending')
         .then(res => {
-
+            console.log(res, 'res')
+            if (res.length === 0) {
+                return Promise.reject({ status: 404, msg: 'Invalid ID - does not match' })
+            }
             return res
-
         })
 }
