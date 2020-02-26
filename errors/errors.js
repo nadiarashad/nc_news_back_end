@@ -6,6 +6,9 @@ exports.pSQLErrorsHandler = (err, req, res, next) => {
         '42703': { status: 400, msg: 'Invalid request: missing required fields' }, // empty obj
         '23502': { status: 400, msg: 'Invalid request: missing required fields' }, // null
         '42803': { status: 500, msg: 'Issue retrieving data' },
+        '23503': {
+            status: 404, msg: 'Invalid request: missing required fields'
+        },
 
         '22P02': { status: 400, msg: "Bad request: missing required fields" } //USED
         /* This is for url id of "banana" instead of number, 

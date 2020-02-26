@@ -1,4 +1,4 @@
-const { getArticleById, updateVotes, createArticle } = require('../models/articlesModel')
+const { getArticleById, updateVotes, createArticle, getAllCommentsForId } = require('../models/articlesModel')
 
 exports.sendArticles = (req, res, next) => {
     console.log('in controller')
@@ -31,11 +31,42 @@ exports.sendUpdatedArticleVotes = (req, res, next) => {
 }
 
 exports.postArticle = (req, res, next) => {
+    console.log('in controller')
+    // console.log(req.params, 'req.params')
+    // console.log(req.body.username, 'req.body.username')
+    // console.log(req.body.body, 'req.body.body')
 
-    createArticle()
-        .then(posting => {
-            res.status(200).send({ posting })
+    const { article_id } = req.params
+
+    const author = req.body.username
+    const comment = { body: req.body.body, author: author, article_id: article_id }
+
+    createArticle(comment)
+        .then(comment => {
+            res.status(201).send({ comment })
         })
-        .catch(err =>
-            next(err))
+        .catch(err => {
+            // console.log(err)
+            next(err)
+        })
+}
+
+exports.getCommentsByArticleId = (req, res, next) => {
+    // console.log(req.params)
+
+    const { article_id } = req.params
+
+    // console.log(req.query)
+
+    const { sort_by, order_by } = req.query
+
+    getAllCommentsForId(article_id, sort_by, order_by)
+        // console.log(sort_by, 'sort by', order_by)
+        .then(comments => {
+            // console.log(comments, 'in controller')
+            return res.status(200).send({ comments })
+        })
+        .catch(err => {
+            next(err)
+        })
 }

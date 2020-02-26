@@ -3,8 +3,8 @@ const app = require('../app')
 const knex = require('../db/connection')
 const request = require('supertest')
 const { expect } = require('chai')
-
-// chai.use(require("sams-chai-sorted"))
+const chai = require("chai")
+chai.use(require("sams-chai-sorted"))
 
 describe('/api', () => {
     after(() => {
@@ -137,16 +137,58 @@ describe('/api', () => {
                     })
             });
 
-            it('POST: responds with the posted object', () => {
+            it('POST: 201 responds with the successful posted comment', () => {
                 return request(app)
-                    .post('/api/articles/1/comments')
-                    .send({ username: '', body: '' })
-                    .expect(200)
+                    .post('/api/articles/2/comments')
+                    .send({
+                        username: 'butter_bridge', body: "Hello, I'm in the middle of my backend review"
+                    })
+                    .expect(201)
                     .then(res => {
                         expect(res.body.comment).to.be.an('Array')
-
+                        res.body.comment.forEach(article => expect(article).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'article_id', 'comment_id']))
+                        expect(res.body.comment[0].body).to.eql("Hello, I'm in the middle of my backend review")
                     })
             });
+            it('POST: 400 responds with error when missing fields', () => {
+                return request(app)
+                    .post('/api/articles/2/comments')
+                    .send({})
+                    .expect(400)
+                    .then(res => {
+                        expect(res.body.msg).to.eql('Invalid request: missing required fields')
+                    })
+            });
+            it('POST: 404 Responds error when id valid but no correspond.', () => {
+                return request(app)
+                    .post('/api/articles/9999/comments')
+                    .send({ username: 'butter_bridge', body: "Hello, I'm in the middle of my backend review" })
+                    .expect(404)
+                    .then(res => {
+                        expect(res.body.msg).to.eql('Invalid request: missing required fields')
+                    })
+            });
+        });
+        it.only('GET: 200 responds with an array of comments for the given article_id', () => {
+            return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.comments).to.be.an('Array')
+                    res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
+                })
+        });
+        it.only('GET: 200 responds with an array of comments for the given article id sorted by a given column, defaulting to created_at', () => {
+            return request(app)
+                .get('/api/articles/1/comments?sort_by=author&&order_by=desc')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.comments).to.be.an('Array')
+                    res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
+                    expect(res.body.comments).to.be.sortedBy('author', { descending: true })
+                })
+
+
         });
 
     });
