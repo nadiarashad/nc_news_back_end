@@ -58,6 +58,160 @@ describe('/api', () => {
 
 
     describe('/articles', () => {
+
+        it('GET: 200 returns all articles', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+
+                })
+        });
+
+        it('GET: 404 responds with method not allow when invalid path', () => {
+            return request(app)
+                .get('/api/INVALID_PATH')
+                .expect(404)
+                .then(res => {
+                    expect(res.body.msg).to.equal('Route not found')
+                })
+        });
+
+        it('GET: 200 responds with articles sorted by specified valid column', () => {
+            return request(app)
+                .get('/api/articles?sort_by=author')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles).to.be.sortedBy('author', { descending: true })
+                })
+        });
+        it('GET: 200 responds with articles defaulted to "date" when no query is passed', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles).to.be.sortedBy('created_at', { descending: true })
+                })
+        });
+        it('GET: 200 responds with articles ordered to ascending, defaults to descending', () => {
+            return request(app)
+                .get('/api/articles?sort_by=author&&order_by=asc')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles).to.be.sortedBy('author')
+                    expect(res.body.articles[0].author).to.eql('butter_bridge')
+                })
+        });
+        it('GET: 200 responds with articles ordered to ascending', () => {
+            return request(app)
+                .get('/api/articles?sort_by=author&&order_by=asc')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles).to.be.sortedBy('author')
+                })
+        });
+        it('GET: 200 responds with articles default ordered to descending', () => {
+            return request(app)
+                .get('/api/articles?sort_by=author')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles).to.be.sortedBy('author', { descending: true })
+                })
+        });
+        it('GET: 200 responds with a filter of articles by username', () => {
+            return request(app)
+                .get('/api/articles?username=butter_bridge')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles[0].author).to.eql('butter_bridge')
+                })
+        });
+        it('GET: 200 returns all articles for author lurkey empty array', () => {
+            return request(app)
+                .get('/api/articles?username=lurker')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    expect(res.body.articles).to.eql([])
+
+                })
+        });
+
+        it('GET: 200 responds with a filter of articles by topics', () => {
+            return request(app)
+                .get('/api/articles?topic=mitch')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles[0].topic).to.eql('mitch')
+                })
+        });
+        it('GET: 200 responds with a filter of articles by topics', () => {
+            return request(app)
+                .get('/api/articles?username=rogersop&&topic=cats')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.articles).to.be.an('Array')
+                    res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                    expect(res.body.articles[0].topic).to.eql('cats')
+                    expect(res.body.articles[0].author).to.eql('rogersop')
+                })
+        });
+
+
+
+        it('GET: 404 responds with an error when filtering an author with an invalid input', () => {
+            return request(app)
+                .get('/api/articles?username=12345')
+                .expect(404)
+                .then(res => {
+                    expect(res.body.msg).to.equal('User does not exist')
+                })
+        });
+        it('GET: 404 responds with an error when filtering a topic which does not exist', () => {
+            return request(app)
+                .get('/api/articles?topic=notopic')
+                .expect(404)
+                .then(res => {
+                    expect(res.body.msg).to.equal('Topic does not exist')
+                    // res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                })
+        });
+        it('GET: 404 responds with an error when filtering a topic which does not exist', () => {
+            return request(app)
+                .get('/api/articles?topic=potatoes')
+                .expect(404)
+                .then(res => {
+                    expect(res.body.msg).to.equal('Topic does not exist')
+                })
+        });
+
+        it('GET: 400 responds with an error if inputting an invalid order by query', () => {
+            return request(app)
+                .get('/api/articles?order_by=potato')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid order by requested, please amend to either "asc" or "desc"')
+                })
+        });
+
+
+
         describe('/:article_id', () => {
             it('GET: 200 responds with an article object including the comment count', () => {
                 return request(app)
@@ -248,8 +402,119 @@ describe('/api', () => {
                     res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
                 })
         });
+        it('GET: 200 returns an empty body when inputting a valid article_id which does not have comments associated', () => {
+            return request(app)
+                .get('/api/articles/2/comments')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.comments).to.be.an('Array')
+                    // expect(res.body.msg).to.eql('Invalid request: missing required fields')
+                })
+        });
+        it('GET: 400 responds with an error if inputting an invalid order by query', () => {
+            return request(app)
+                .get('/api/articles/1/comments?sort_by=body&&order_by=potato')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid order by requested, please amend to either "asc" or "desc"')
+                })
+        });
+    });
+    describe('/comments', () => {
+        describe('/:comment_id', () => {
+            it('PATCH 200 increments the vote when passed a positive number ', () => {
+                return request(app)
+                    .patch('/api/comments/1')
+                    .send({ inc_votes: 1 })
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.updatedComment).to.be.an('Array')
+                        res.body.updatedComment.forEach(comment => expect(comment).to.have.all.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']))
+                        expect(res.body.updatedComment[0].votes).to.eql(17)
+                    })
+            });
+            it('PATCH: 200 decrements the vote when passed a negative ', () => {
+                return request(app)
+                    .patch('/api/comments/1')
+                    .send({ inc_votes: -30 })
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.updatedComment).to.be.an('Array')
+                        res.body.updatedComment.forEach(comment => expect(comment).to.have.all.keys(['comment_id', 'author', 'article_id', 'votes', 'created_at', 'body']))
+                        expect(res.body.updatedComment[0].votes).to.eql(-14)
+                    })
+            });
+
+            it('PATCH: 404 Responds error when id valid but no correspond.', () => {
+                return request(app)
+                    .patch('/api/comments/999')
+                    .send({ inc_votes: 1 })
+                    .expect(404)
+                    .then(res => {
+                        expect(res.body.msg).to.equal("Invalid ID - does not match")
+                    })
+            });
+            it('PATCH: 400 Responds error when id valid but no correspond.', () => {
+                return request(app)
+                    .patch('/api/comments/banana')
+                    .send({ inc_votes: 1 })
+                    .expect(400)
+                    .then(res => {
+                        expect(res.body.msg).to.equal("Bad request: missing required fields")
+                    })
+            });
+            it('PATCH: 400 responds with error when missing input fields', () => {
+                return request(app)
+                    .patch('/api/comments/5')
+                    .send({})
+                    .expect(400)
+                    .then(res => {
+                        expect(res.body.msg).to.equal("Bad request: missing required fields")
+                    })
+            });
+            it('PATCH: 400 responds with error failing schema validation', () => {
+                return request(app)
+                    .patch('/api/comments/5')
+                    .send({ inc_votes: 'Mitch' })
+                    .expect(400)
+                    .then(res => {
+                        expect(res.body.msg).to.equal("Bad request: missing required fields")
+                    })
+            });
+
+            it('DELETE: 204 responds with an empty body when deleted the comment', () => {
+                return request(app)
+                    .delete('/api/comments/5')
+                    .expect(204)
+                    .then(res => {
+                        expect(res.body).to.eql({})
+                    })
+            });
+            it('DELETE: 404 responds with an error when ID not found against a comment', () => {
+                return request(app)
+                    .delete('/api/comments/999')
+                    .expect(404)
+                    .then(res => {
+                        expect(res.body.msg).to.equal('Not Found - invalid ID')
+                    })
+
+            });
+            it('DELETE: 400 responds with an error ', () => {
+                return request(app)
+                    .delete('/api/comments/banana')
+                    .expect(400)
+                    .then(res => {
+                        expect(res.body.msg).to.equal('Bad request: missing required fields')
+                    })
+            });
+
+
+
+        });
+
 
     });
+
 
 });
 

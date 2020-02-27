@@ -1,6 +1,6 @@
-const { getArticleById, updateVotes, createArticle, getAllCommentsForId } = require('../models/articlesModel')
+const { getArticleById, updateVotes, createArticle, getAllCommentsForId, getAllArticles } = require('../models/articlesModel')
 
-exports.sendArticles = (req, res, next) => {
+exports.sendArticlesById = (req, res, next) => {
     console.log('in controller')
     // console.log(req.params)
 
@@ -65,6 +65,20 @@ exports.getCommentsByArticleId = (req, res, next) => {
         .then(comments => {
             // console.log(comments, 'in controller')
             return res.status(200).send({ comments })
+        })
+        .catch(err => {
+            next(err)
+        })
+}
+
+exports.sendAllArticles = (req, res, next) => {
+    console.log(req.query)
+
+    const { sort_by, order_by, username, topic } = req.query
+
+    getAllArticles(sort_by, order_by, username, topic)
+        .then(articles => {
+            return res.status(200).send({ articles })
         })
         .catch(err => {
             next(err)
