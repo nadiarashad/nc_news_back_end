@@ -211,17 +211,6 @@ describe('/api', () => {
                 })
         });
 
-        it.only('GET: 400 responds with an error if inputting an invalid order by query', () => {
-            return request(app)
-                .get('/api/articles?order_by=Hello')
-                .expect(400)
-                .then(res => {
-
-                    expect(res.body.msg).to.equal('Invalid order by requested, please amend to either "asc" or "desc"')
-                })
-        });
-
-
 
         describe('/:article_id', () => {
             it('GET: 200 responds with an article object including the comment count', () => {
@@ -427,7 +416,7 @@ describe('/api', () => {
                     console.log(res.body)
                     expect(res.body.comments).to.be.an('Array')
                     expect(res.body.comments[0]).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id'])
-                    expect(res.body.comments[0].created_at).to.eql('2000-11-26T12:36:03.389+00:00')
+                    expect(res.body.comments[0].created_at).to.eql('2016-11-22T12:36:03.389+00:00')
                 })
         });
 
@@ -466,14 +455,6 @@ describe('/api', () => {
                     // expect(res.body.msg).to.eql('Invalid request: missing required fields')
                 })
         });
-        it('GET: 400 responds with an error if inputting an invalid order by query', () => {
-            return request(app)
-                .get('/api/articles/1/comments?sort_by=body&&order_by=potato')
-                .expect(400)
-                .then(res => {
-                    expect(res.body.msg).to.eql('Invalid order by requested, please amend to either "asc" or "desc"')
-                })
-        });
 
         it('GET: 200 can sort by votes', () => {
             return request(app)
@@ -481,7 +462,7 @@ describe('/api', () => {
                 .expect(200)
                 .then(res => {
                     console.log(res.body)
-                    expect(res.body.comments[0].votes).to.eql(-100)
+                    expect(res.body.comments[0].votes).to.eql(100)
                 })
         });
 
