@@ -8,9 +8,9 @@ exports.sendUpdatedVotes = (req, res, next) => {
     console.log(comment_id, inc_votes)
 
     updateVote(comment_id, inc_votes)
-        .then(updatedComment => {
-
-            return res.status(200).send({ updatedComment })
+        .then(comment => {
+            // console.log(comment)
+            return res.status(200).send({ comment: comment })
         })
         .catch(err => {
             next(err)

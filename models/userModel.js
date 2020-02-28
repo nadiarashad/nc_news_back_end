@@ -13,7 +13,7 @@ exports.getUserInfo = (username) => {
                 return Promise.reject({ status: 404, msg: 'Route not found' })
             }
             // console.log(user)
-            return user
+            return user[0]
         })
 
 }

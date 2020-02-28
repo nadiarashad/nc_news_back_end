@@ -6,8 +6,8 @@ exports.sendTopics = (req, res, next) => {
         .then((topics) => {
             return res.status(200).send({ topics })
         })
-    // .catch(err => {
-    //     // console.log('from catch')
-    //     next(err)
-    // })
+        .catch(err => {
+            // console.log('from catch')
+            next(err)
+        })
 }

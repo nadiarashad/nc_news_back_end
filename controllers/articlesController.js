@@ -7,7 +7,7 @@ exports.sendArticlesById = (req, res, next) => {
     const { article_id } = req.params
     getArticleById(article_id)
         .then(article => {
-            return res.status(200).send({ article })
+            return res.status(200).send(article)
         })
         .catch(err =>
             next(err))
@@ -24,6 +24,7 @@ exports.sendUpdatedArticleVotes = (req, res, next) => {
 
     updateVotes(article_id, inc_votes)
         .then(article => {
+            console.log(article)
             return res.status(200).send({ article })
         })
         .catch(err =>
@@ -61,10 +62,12 @@ exports.getCommentsByArticleId = (req, res, next) => {
     const { sort_by, order_by } = req.query
 
     getAllCommentsForId(article_id, sort_by, order_by)
+
         // console.log(sort_by, 'sort by', order_by)
-        .then(comments => {
-            // console.log(comments, 'in controller')
-            return res.status(200).send({ comments })
+        .then(comment => {
+            // console.log(comment, 'in controller')
+
+            return res.status(200).send({ comments: comment })
         })
         .catch(err => {
             next(err)
@@ -72,12 +75,15 @@ exports.getCommentsByArticleId = (req, res, next) => {
 }
 
 exports.sendAllArticles = (req, res, next) => {
-    console.log(req.query)
 
-    const { sort_by, order_by, username, topic } = req.query
+    const username = req.query.author
+    const { sort_by, order_by, topic } = req.query
 
     getAllArticles(sort_by, order_by, username, topic)
+
         .then(articles => {
+
+
             return res.status(200).send({ articles })
         })
         .catch(err => {

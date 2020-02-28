@@ -1,3 +1,5 @@
+
+
 exports.pSQLErrorsHandler = (err, req, res, next) => {
     console.log('errorrrrrrrrrrrrrrrrrrrrr')
     console.log(err)
@@ -32,7 +34,7 @@ exports.handleCustomErrors = (err, req, res, next) => { //USED
 
 
 exports.handle405s = (req, res, next) => {
-    res.status(405).send({ msg: 'method not allowed ' })
+    res.status(405).send({ msg: 'Method not allowed' })
 
 }
 
