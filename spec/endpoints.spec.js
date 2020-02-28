@@ -177,12 +177,12 @@ describe('/api', () => {
         });
 
 
-        it.only('GET: 404 responds with an error when filtering an author with an invalid input', () => {
+        it('GET: 404 responds with an error when filtering an author with an invalid input', () => {
             return request(app)
                 .get('/api/articles?author=12345')
                 .expect(404)
                 .then(res => {
-                    expect(res.body.msg).to.equal('User does not exist')
+                    expect(res.body.msg).to.equal('Not found')
                 })
         });
         it('GET: 404 responds with an error when filtering a topic which does not exist', () => {
@@ -190,7 +190,7 @@ describe('/api', () => {
                 .get('/api/articles?topic=notopic')
                 .expect(404)
                 .then(res => {
-                    expect(res.body.msg).to.equal('Topic does not exist')
+                    expect(res.body.msg).to.equal('Not found')
                 })
         });
         it('GET: 404 responds with an error when filtering a topic which does not exist', () => {
@@ -198,16 +198,26 @@ describe('/api', () => {
                 .get('/api/articles?topic=potatoes')
                 .expect(404)
                 .then(res => {
-                    expect(res.body.msg).to.equal('Topic does not exist')
+                    expect(res.body.msg).to.equal('Not found')
                 })
         });
 
-        it('GET: 400 responds with an error if inputting an invalid order by query', () => {
+        it('GET: 404 responds with an error when filtering a username which exists and a topic which does not', () => {
             return request(app)
-                .get('/api/articles?order_by=12345')
+                .get('/api/articles?author=icellusedkarstopic=potatoes')
+                .expect(404)
+                .then(res => {
+                    expect(res.body.msg).to.equal('Not found')
+                })
+        });
+
+        it.only('GET: 400 responds with an error if inputting an invalid order by query', () => {
+            return request(app)
+                .get('/api/articles?order_by=Hello')
                 .expect(400)
                 .then(res => {
-                    expect(res.body.msg).to.eql('Invalid order by requested, please amend to either "asc" or "desc"')
+
+                    expect(res.body.msg).to.equal('Invalid order by requested, please amend to either "asc" or "desc"')
                 })
         });
 

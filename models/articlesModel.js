@@ -59,8 +59,8 @@ exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
     console.log('in model')
     // console.log(sort_by, 'sortby')
 
-    const arrayOfAllowed = ['asc', 'desc', 'ascending', 'descending']
-    if (arrayOfAllowed.includes(order_by) || order_by === undefined) {
+
+    if (order_by === undefined || order_by === 'asc' || order_by === 'desc') {
 
         return knex
             .select('body', 'author', 'votes', 'created_at', 'comment_id')
@@ -79,10 +79,11 @@ exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
                         }
                     })
                 }
-
                 return res
             })
-    } else {
+
+    }
+    else {
         return Promise.reject({ status: 400, msg: 'Invalid order by requested, please amend to either "asc" or "desc"' })
     }
 }
@@ -91,7 +92,7 @@ exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
 
 exports.getAllArticles = (sort_by = 'articles.created_at', order_by = 'desc', username, topic) => {
 
-    if (order_by === 'asc' || order_by === 'desc' || order_by === undefined || topic === undefined || sort_by === undefined) {
+    if (order_by === 'asc' || order_by === 'desc' || order_by === undefined) {
 
         return knex
             .select('articles.author', 'articles.title', 'articles.article_id', 'articles.topic', 'articles.created_at', 'articles.votes')
@@ -115,14 +116,19 @@ exports.getAllArticles = (sort_by = 'articles.created_at', order_by = 'desc', us
                     if (username) {
 
                         const userCheck = checkIfUserNameAndTopicExist(username, 'users', 'username')
+
+                        return userCheck
                     }
                     else if (topic) {
 
                         const topicCheck = checkIfUserNameAndTopicExist(topic, 'topics', 'slug')
 
+                        return topicCheck
+
+
                     }
 
-                    return Promise.all([userCheck, topicCheck])
+                    // return Promise.all([userCheck, topicCheck])
 
                 }
                 return articles
