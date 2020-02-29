@@ -99,7 +99,7 @@ exports.getAllArticles = (sort_by = 'created_at', order_by = 'desc', username, t
 
         return knex
             .select('articles.author', 'articles.title', 'articles.article_id', 'articles.topic', 'articles.created_at', 'articles.votes')
-            // .where('articles.author', '=', username)
+
             .from('articles')
             .count({ comment_count: 'comments.article_id' })
             .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
@@ -118,21 +118,14 @@ exports.getAllArticles = (sort_by = 'created_at', order_by = 'desc', username, t
             .then(articles => {
                 if (articles.length === 0) {
                     if (username) {
-
                         const userCheck = checkIfUserNameAndTopicExist(username, 'users', 'username')
-
                         return userCheck
                     }
                     else if (topic) {
-
                         const topicCheck = checkIfUserNameAndTopicExist(topic, 'topics', 'slug')
-
                         return topicCheck
 
                     }
-
-                    // return Promise.all([userCheck, topicCheck])
-
                 }
                 return articles
             })
@@ -143,22 +136,15 @@ exports.getAllArticles = (sort_by = 'created_at', order_by = 'desc', username, t
 
 
 const checkIfUserNameAndTopicExist = (toCheck, table, row) => {
-    // console.log('in my function')
+
     return knex
         .select('*')
         .from(table)
         .where(`${row}`, toCheck)
         .then(existsCheck => {
-            // console.log(existsCheck, 'existttttttttttt check')
-
             if (existsCheck.length === 0) {
-
-                // console.log(existsCheck, 'existttttttttttt check')
-
                 return Promise.reject({ status: 404, msg: 'Not found' })
             }
-
-            // console.log(existsCheck, 'helloooooooooooooooo')
             return []
         })
 
