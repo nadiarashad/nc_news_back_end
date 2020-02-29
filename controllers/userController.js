@@ -3,7 +3,7 @@ const { getUserInfo } = require('../models/userModel')
 
 
 exports.sendUserinfoByUsername = (req, res, next) => {
-    console.log('in controller')
+    // console.log('in controller')
     // console.log(req.params)
     const { username } = req.params
     getUserInfo(username)

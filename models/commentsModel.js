@@ -25,7 +25,7 @@ exports.deleteComment = (comment_id) => {
 
     return knex('comments').where({ comment_id }).del()
         .then(res => {
-            console.log(res)
+            // console.log(res)
 
             if (res === 0) {
                 return Promise.reject({ status: 404, msg: 'Not Found - invalid ID' })

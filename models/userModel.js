@@ -1,7 +1,7 @@
 const knex = require('../db/connection')
 
 exports.getUserInfo = (username) => {
-    console.log('in model')
+    // console.log('in model')
     // console.log(username)
     return knex
         .select('*')

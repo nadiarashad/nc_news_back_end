@@ -9,6 +9,8 @@ apiRouter.use('/users', usersRouter)
 apiRouter.use('/articles', articlesRouter)
 apiRouter.use('/comments', commentsRouter)
 apiRouter.use('/topics', topicsRouter)
-apiRouter.all(handle405s)
+apiRouter.route('/').all((req, res) => {
+    res.status(405).send({ msg: 'Route not found' })
+})
 
 module.exports = apiRouter

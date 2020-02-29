@@ -1,13 +1,13 @@
 const { getArticleById, updateVotes, createArticle, getAllCommentsForId, getAllArticles } = require('../models/articlesModel')
 
 exports.sendArticlesById = (req, res, next) => {
-    console.log('in controller')
+    // console.log('in controller')
     // console.log(req.params)
 
     const { article_id } = req.params
     getArticleById(article_id)
         .then(article => {
-            return res.status(200).send(article)
+            return res.status(200).send({ article: article })
         })
         .catch(err =>
             next(err))
@@ -15,7 +15,7 @@ exports.sendArticlesById = (req, res, next) => {
 }
 
 exports.sendUpdatedArticleVotes = (req, res, next) => {
-    console.log('in controller')
+    // console.log('in controller')
     // console.log(req.params)
     // console.log(req.body)
 
@@ -25,14 +25,14 @@ exports.sendUpdatedArticleVotes = (req, res, next) => {
     updateVotes(article_id, inc_votes)
         .then(article => {
             console.log(article)
-            return res.status(200).send({ article })
+            return res.status(200).send({ article: article })
         })
         .catch(err =>
             next(err))
 }
 
 exports.postArticle = (req, res, next) => {
-    console.log('in controller')
+    // console.log('in controller')
     // console.log(req.params, 'req.params')
     // console.log(req.body.username, 'req.body.username')
     // console.log(req.body.body, 'req.body.body')
@@ -62,11 +62,9 @@ exports.getCommentsByArticleId = (req, res, next) => {
     const { sort_by, order_by } = req.query
 
     getAllCommentsForId(article_id, sort_by, order_by)
-
         // console.log(sort_by, 'sort by', order_by)
         .then(comment => {
             // console.log(comment, 'in controller')
-
             return res.status(200).send({ comments: comment })
         })
         .catch(err => {

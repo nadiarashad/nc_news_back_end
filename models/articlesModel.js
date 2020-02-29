@@ -9,14 +9,12 @@ exports.getArticleById = (article_id) => {
         .count({ comment_count: 'comments.article_id' })
         .leftJoin('comments', 'articles.article_id', 'comments.article_id')
         .groupBy('articles.article_id')
-
-
         .then(article => {
             if (article.length === 0) {
                 return Promise.reject({ status: 404, msg: 'Invalid ID' })
             }
-
-            return { article: { ...article } }
+            // console.log(article, 'articleeeeeeeeeeeee')
+            return article[0]
         })
 }
 
@@ -38,7 +36,7 @@ exports.updateVotes = (article_id, inc_votes) => {
                 return Promise.reject({ status: 404, msg: 'Invalid ID - does not match' })
             }
 
-            return updatedVotes
+            return updatedVotes[0]
         })
 
 }
@@ -56,10 +54,8 @@ exports.createArticle = (comment) => {
 }
 
 exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
-    console.log('in model')
+    // console.log('in model')
     // console.log(sort_by, 'sortby')
-
-
 
 
     return knex
@@ -123,7 +119,6 @@ exports.getAllArticles = (sort_by = 'articles.created_at', order_by = 'desc', us
 
                     return topicCheck
 
-
                 }
 
                 // return Promise.all([userCheck, topicCheck])
@@ -141,7 +136,7 @@ const checkIfUserNameAndTopicExist = (toCheck, table, row) => {
         .from(table)
         .where(`${row}`, toCheck)
         .then(existsCheck => {
-            console.log(existsCheck, 'existttttttttttt check')
+            // console.log(existsCheck, 'existttttttttttt check')
 
             if (existsCheck.length === 0) {
 

@@ -9,11 +9,11 @@ app.use('/api', apiRouter)
 
 app.use('/*', handle404s)
 
-app.use('/*', handle405s)
 
 app.use(pSQLErrorsHandler)
 
 app.use(handleCustomErrors)
 
+app.use('/*', handle405s)
 
 module.exports = app

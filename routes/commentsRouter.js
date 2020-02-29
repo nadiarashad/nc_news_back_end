@@ -2,9 +2,10 @@ const commentsRouter = require('express').Router()
 const { sendUpdatedVotes, deleteCommentById } = require('../controllers/commentsController')
 const handle405s = require('../errors/errors')
 
-commentsRouter.patch('/:comment_id', sendUpdatedVotes)
-commentsRouter.delete('/:comment_id', deleteCommentById)
-commentsRouter.all(handle405s)
+commentsRouter.route('/:comment_id').patch(sendUpdatedVotes).delete(deleteCommentById).all((req, res) => {
+    res.status(405).send({ msg: 'Route not found' })
+})
+
 
 
 module.exports = commentsRouter
