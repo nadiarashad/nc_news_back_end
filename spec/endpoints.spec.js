@@ -20,7 +20,7 @@ describe('/api', () => {
             return request(app)['delete']('/api')
                 .expect(405)
                 .then(({ body: { msg } }) => {
-                    expect(msg).to.equal('Route not found');
+                    expect(msg).to.equal('Method not allowed');
                 });
         });
 
@@ -50,13 +50,13 @@ describe('/api', () => {
 
 
         describe('INVALID METHODS', () => {
-            it('status:405', () => {
+            it('status:405 when entering an invalid request to endpoint /api/topics', () => {
                 const invalidMethods = ['patch', 'put', 'delete'];
                 const methodPromises = invalidMethods.map((method) => {
                     return request(app)['patch']('/api/topics')
                         .expect(405)
                         .then(({ body: { msg } }) => {
-                            expect(msg).to.equal('Route not found');
+                            expect(msg).to.equal('Method not allowed');
                         });
                 });
                 // methodPromises -> [ Promise { <pending> }, Promise { <pending> }, Promise { <pending> } ]
@@ -72,7 +72,7 @@ describe('/api', () => {
                     .get('/api/users/butter_bridge')
                     .expect(200)
                     .then(res => {
-                        console.log(res.body)
+                        // console.log(res.body)
                         expect(res.body.user).to.be.an('Object')
                         expect(res.body.user).to.have.all.keys('username', 'name', 'avatar_url')
                     })
@@ -89,13 +89,13 @@ describe('/api', () => {
         });
 
         describe('INVALID METHODS', () => {
-            it('status:405', () => {
+            it('status:405 when requesting an invalid method on endpoint /api/users/:username ', () => {
                 const invalidMethods = ['patch', 'put', 'delete'];
                 const methodPromises = invalidMethods.map((method) => {
                     return request(app)['patch']('/api/users/butter_bridge')
                         .expect(405)
                         .then(({ body: { msg } }) => {
-                            expect(msg).to.equal('Route not found');
+                            expect(msg).to.equal('Method not allowed');
                         });
                 });
                 // methodPromises -> [ Promise { <pending> }, Promise { <pending> }, Promise { <pending> } ]
@@ -144,7 +144,7 @@ describe('/api', () => {
                 .then(res => {
                     expect(res.body.articles).to.be.an('Array')
                     res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
-                    console.log(res.body)
+                    // console.log(res.body)
                     expect(res.body.articles[0].created_at).to.eql('2018-11-15T12:21:54.171+00:00')
                 })
         });
@@ -166,6 +166,23 @@ describe('/api', () => {
                 .then(res => {
                     expect(res.body.articles).to.be.an('Array')
                     res.body.articles.forEach(article => expect(article).to.have.all.keys(['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count']))
+                })
+        });
+
+        it('GET: 400 responds with an error when order_by is an invalid query', () => {
+            return request(app)
+                .get('/api/articles?order_by=potato')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid order query')
+                })
+        });
+        it('GET: 400 responds with an error when order_by is an invalid query', () => {
+            return request(app)
+                .get('/api/articles?order_by=12345')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid order query')
                 })
         });
         it('GET: 200 responds with articles default ordered to descending', () => {
@@ -193,7 +210,7 @@ describe('/api', () => {
                 .get('/api/articles?author=lurker')
                 .expect(200)
                 .then(res => {
-                    console.log(res.body)
+                    // console.log(res.body)
                     expect(res.body.articles).to.be.an('Array')
                     expect(res.body.articles).to.eql([])
 
@@ -253,7 +270,7 @@ describe('/api', () => {
                     .get('/api/articles/1')
                     .expect(200)
                     .then(res => {
-                        console.log(res.body)
+                        // console.log(res.body)
                         expect(res.body.article).to.be.an('Object')
 
                         expect(res.body.article).to.have.all.keys('author', 'title', 'article_id', 'body', 'topic', 'created_at', 'votes', 'comment_count')
@@ -308,7 +325,7 @@ describe('/api', () => {
                         expect(res.body.msg).to.equal("Invalid ID - does not match")
                     })
             });
-            it.only('PATCH: 200 defaults increment to 0 when no body is given in the request', () => {
+            it('PATCH: 200 defaults increment to 0 when no body is given in the request', () => {
                 return request(app)
                     .patch('/api/articles/1')
                     .send({})
@@ -336,7 +353,7 @@ describe('/api', () => {
                     })
                     .expect(201)
                     .then(res => {
-                        console.log(res.body.comment.body)
+                        // console.log(res.body.comment.body)
                         expect(res.body.comment).to.be.an('Object')
                         expect(res.body.comment).to.have.all.keys('body', 'author', 'votes', 'created_at', 'article_id', 'comment_id')
                         expect(res.body.comment.body).to.eql("Hello, I'm in the middle of my backend review")
@@ -435,7 +452,7 @@ describe('/api', () => {
         });
         it('GET: 200 can sort by ascending when requesting asc in the query', () => {
             return request(app)
-                .get('/api/articles/1/comments?order_by=ascending')
+                .get('/api/articles/1/comments?order_by=asc')
                 .expect(200)
                 .then(res => {
                     expect(res.body.comments).to.be.an('Array')
@@ -448,10 +465,27 @@ describe('/api', () => {
                 .get('/api/articles/1/comments')
                 .expect(200)
                 .then(res => {
-                    console.log(res.body)
+                    // console.log(res.body)
                     expect(res.body.comments).to.be.an('Array')
                     expect(res.body.comments[0]).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id'])
                     expect(res.body.comments[0].created_at).to.eql('2016-11-22T12:36:03.389+00:00')
+                })
+        });
+
+        it('GET: 400 responds with an error when order_by is an invalid query', () => {
+            return request(app)
+                .get('/api/articles/1/comments?order_by=potato')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid order query')
+                })
+        });
+        it('GET: 400 responds with an error when order_by is an invalid query', () => {
+            return request(app)
+                .get('/api/articles/1/comments?order_by=12345')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.eql('Invalid order query')
                 })
         });
 
@@ -496,7 +530,7 @@ describe('/api', () => {
                 .get('/api/articles/1/comments?sort_by=votes')
                 .expect(200)
                 .then(res => {
-                    console.log(res.body)
+                    // console.log(res.body)
                     expect(res.body.comments[0].votes).to.eql(100)
                 })
         });
@@ -508,10 +542,10 @@ describe('/api', () => {
                     return request(app)['patch']('/api/articles')
                         .expect(405)
                         .then(({ body: { msg } }) => {
-                            expect(msg).to.equal('Route not found');
+                            expect(msg).to.equal('Method not allowed');
                         });
                 });
-                // methodPromises -> [ Promise { <pending> }, Promise { <pending> }, Promise { <pending> } ]
+
                 return Promise.all(methodPromises);
             });
             it('status:405 articles /: article_id / comments', () => {
@@ -520,7 +554,7 @@ describe('/api', () => {
                     return request(app)['patch']('/api/articles/:article_id/comments')
                         .expect(405)
                         .then(({ body: { msg } }) => {
-                            expect(msg).to.equal('Route not found');
+                            expect(msg).to.equal('Method not allowed');
                         });
                 });
                 // methodPromises -> [ Promise { <pending> }, Promise { <pending> }, Promise { <pending> } ]
@@ -532,7 +566,7 @@ describe('/api', () => {
                     return request(app)['delete']('/api/articles/:article_id')
                         .expect(405)
                         .then(({ body: { msg } }) => {
-                            expect(msg).to.equal('Route not found');
+                            expect(msg).to.equal('Method not allowed');
                         });
                 });
                 // methodPromises -> [ Promise { <pending> }, Promise { <pending> }, Promise { <pending> } ]
@@ -550,7 +584,7 @@ describe('/api', () => {
                     .send({ inc_votes: 1 })
                     .expect(200)
                     .then(res => {
-                        console.log(res.body)
+                        // console.log(res.body)
                         expect(res.body).to.be.an('Object')
                         expect(res.body.comment).to.have.all.keys('comment_id', 'author', 'article_id', 'votes', 'created_at', 'body')
                         expect(res.body.comment.votes).to.eql(17)
@@ -637,13 +671,13 @@ describe('/api', () => {
 
 
         describe('INVALID METHODS', () => {
-            it('status:405', () => {
+            it('status:405 to endpoint /api/comments/:comment_id', () => {
                 const invalidMethods = ['get', 'put'];
                 const methodPromises = invalidMethods.map((method) => {
                     return request(app)['put']('/api/comments/:comment_id')
                         .expect(405)
                         .then(({ body: { msg } }) => {
-                            expect(msg).to.equal('Route not found');
+                            expect(msg).to.equal('Method not allowed');
                         });
                 });
 

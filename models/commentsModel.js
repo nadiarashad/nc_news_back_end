@@ -4,12 +4,15 @@ exports.updateVote = (comment_id, inc_votes) => {
 
     console.log(comment_id, inc_votes)
 
+    if (inc_votes === undefined) {
+        inc_votes = 0;
+    }
 
     return knex
         .select('comments.*')
         .from('comments')
         .where('comments.comment_id', comment_id)
-        .increment({ 'votes': inc_votes || 0 })
+        .increment({ 'votes': inc_votes })
         .returning('*')
         .then(updatedVotes => {
             if (updatedVotes.length === 0) {
