@@ -1,5 +1,4 @@
 exports.pSQLErrorsHandler = (err, req, res, next) => {
-
     const errCodes = {
         '42703': { status: 400, msg: 'Invalid request: missing required fields' },
         '23502': { status: 400, msg: 'Invalid request: missing required fields' },
@@ -22,7 +21,6 @@ exports.handleCustomErrors = (err, req, res, next) => {
 
 
 exports.handle405s = (req, res, next) => {
-
     res.status(405).send({ msg: 'Method not allowed' })
     next(err)
 }

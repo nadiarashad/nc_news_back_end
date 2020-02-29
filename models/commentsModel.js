@@ -2,8 +2,6 @@ const knex = require('../db/connection')
 
 exports.updateVote = (comment_id, inc_votes) => {
 
-    console.log(comment_id, inc_votes)
-
     if (inc_votes === undefined) {
         inc_votes = 0;
     }
@@ -18,7 +16,6 @@ exports.updateVote = (comment_id, inc_votes) => {
             if (updatedVotes.length === 0) {
                 return Promise.reject({ status: 404, msg: 'Invalid ID - does not match' })
             }
-
             return updatedVotes[0]
         })
 }
@@ -28,8 +25,6 @@ exports.deleteComment = (comment_id) => {
 
     return knex('comments').where({ comment_id }).del()
         .then(res => {
-            // console.log(res)
-
             if (res === 0) {
                 return Promise.reject({ status: 404, msg: 'Not Found - invalid ID' })
             }

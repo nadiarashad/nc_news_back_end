@@ -13,7 +13,6 @@ exports.getArticleById = (article_id) => {
             if (article.length === 0) {
                 return Promise.reject({ status: 404, msg: 'Invalid ID' })
             }
-            // console.log(article, 'articleeeeeeeeeeeee')
             return article[0]
         })
 }
@@ -21,7 +20,7 @@ exports.getArticleById = (article_id) => {
 // join table first 
 // count 
 // groupBy and
-// keep article.article_id, delete comment_id
+// keep article.article_id
 
 exports.updateVotes = (article_id, inc_votes) => {
 
@@ -39,7 +38,6 @@ exports.updateVotes = (article_id, inc_votes) => {
             if (updatedVotes.length === 0) {
                 return Promise.reject({ status: 404, msg: 'Invalid ID - does not match' })
             }
-
             return updatedVotes[0]
         })
 
@@ -52,14 +50,11 @@ exports.createArticle = (comment) => {
         .into('comments')
         .returning('*')
         .then(res => {
-            // console.log(res, 'ressssssssss')
             return res[0]
         })
 }
 
 exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
-    // console.log('in model')
-    // console.log(sort_by, 'sortby')
 
     if (order_by === "asc" || order_by === "desc" || order_by === undefined) {
 
@@ -69,7 +64,6 @@ exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
             .where('comments.article_id', article_id)
             .orderBy(sort_by || 'created_at', order_by || 'desc')
             .then(res => {
-                // console.log(res, 'res')
                 if (res.length === 0) {
                     return knex.select('*').from('articles').where({ article_id }).then(res => {
                         if (res.length === 0) {
@@ -86,7 +80,6 @@ exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
     } else {
         return Promise.reject({ status: 400, msg: "Invalid order query" });
     }
-
 }
 
 
@@ -99,21 +92,18 @@ exports.getAllArticles = (sort_by = 'created_at', order_by = 'desc', username, t
 
         return knex
             .select('articles.author', 'articles.title', 'articles.article_id', 'articles.topic', 'articles.created_at', 'articles.votes')
-
             .from('articles')
             .count({ comment_count: 'comments.article_id' })
             .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
             .groupBy('articles.article_id')
             .orderBy(sort_by, order_by)
             .modify(queryBuilder => {
-
                 if (username) {
                     return username
                         ? queryBuilder.where("articles.author", username) : queryBuilder
                 }
                 return topic
                     ? queryBuilder.where("articles.topic", topic) : queryBuilder
-
             })
             .then(articles => {
                 if (articles.length === 0) {
@@ -124,12 +114,12 @@ exports.getAllArticles = (sort_by = 'created_at', order_by = 'desc', username, t
                     else if (topic) {
                         const topicCheck = checkIfUserNameAndTopicExist(topic, 'topics', 'slug')
                         return topicCheck
-
                     }
                 }
                 return articles
             })
-    } else {
+    }
+    else {
         return Promise.reject({ status: 400, msg: "Invalid order query" });
     }
 }
@@ -147,7 +137,6 @@ const checkIfUserNameAndTopicExist = (toCheck, table, row) => {
             }
             return []
         })
-
 }
 
 
