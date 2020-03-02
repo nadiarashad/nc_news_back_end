@@ -26,7 +26,7 @@ exports.handle405s = (req, res, next) => {
 }
 
 
-exports.handle404s = (req, res, next) => { //USED
+exports.handle404s = (req, res, next) => {
     res.status(404).send({ msg: 'Route not found' })
     next(err)
 }

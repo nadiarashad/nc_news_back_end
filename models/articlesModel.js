@@ -54,26 +54,24 @@ exports.createArticle = (comment) => {
         })
 }
 
-exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
+exports.getAllCommentsForId = (article_id, sort_by, order, ) => {
 
-    if (order_by === "asc" || order_by === "desc" || order_by === undefined) {
+    if (order === "asc" || order === "desc" || order === undefined) {
 
         return knex
             .select('body', 'author', 'votes', 'created_at', 'comment_id')
             .from('comments')
             .where('comments.article_id', article_id)
-            .orderBy(sort_by || 'created_at', order_by || 'desc')
+            .orderBy(sort_by || 'created_at', order || 'desc')
             .then(res => {
                 if (res.length === 0) {
-                    return knex.select('*').from('articles').where({ article_id }).then(res => {
-                        if (res.length === 0) {
-                            return Promise.reject({ status: 404, msg: 'Invalid ID - does not match' })
-                        }
-                        else {
-                            return []
-                        }
-                    })
+
+                    const checkArticleId = checkIfUserNameAndTopicExist(article_id, 'articles', 'article_id')
+
+                    return checkArticleId
                 }
+                return res
+            }).then(res => {
                 return res
             })
 
@@ -86,9 +84,9 @@ exports.getAllCommentsForId = (article_id, sort_by, order_by, ) => {
 
 
 
-exports.getAllArticles = (sort_by = 'created_at', order_by = 'desc', username, topic) => {
+exports.getAllArticles = (sort_by = 'created_at', order = 'desc', username, topic) => {
 
-    if (order_by === "asc" || order_by === "desc" || order_by === undefined) {
+    if (order === "asc" || order === "desc" || order === undefined) {
 
         return knex
             .select('articles.author', 'articles.title', 'articles.article_id', 'articles.topic', 'articles.created_at', 'articles.votes')
@@ -96,7 +94,7 @@ exports.getAllArticles = (sort_by = 'created_at', order_by = 'desc', username, t
             .count({ comment_count: 'comments.article_id' })
             .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
             .groupBy('articles.article_id')
-            .orderBy(sort_by, order_by)
+            .orderBy(sort_by, order)
             .modify(queryBuilder => {
                 if (username) {
                     return username

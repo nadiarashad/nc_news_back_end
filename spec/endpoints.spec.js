@@ -150,7 +150,7 @@ describe('/api', () => {
         });
         it('GET: 200 responds with articles ordered to ascending, defaults to descending', () => {
             return request(app)
-                .get('/api/articles?sort_by=author&&order_by=asc')
+                .get('/api/articles?sort_by=author&&order=asc')
                 .expect(200)
                 .then(res => {
                     expect(res.body.articles).to.be.an('Array')
@@ -161,7 +161,7 @@ describe('/api', () => {
         });
         it('GET: 200 responds with articles ordered to ascending', () => {
             return request(app)
-                .get('/api/articles?order_by=asc')
+                .get('/api/articles?order=asc')
                 .expect(200)
                 .then(res => {
                     expect(res.body.articles).to.be.an('Array')
@@ -171,7 +171,7 @@ describe('/api', () => {
 
         it('GET: 400 responds with an error when order_by is an invalid query', () => {
             return request(app)
-                .get('/api/articles?order_by=potato')
+                .get('/api/articles?order=potato')
                 .expect(400)
                 .then(res => {
                     expect(res.body.msg).to.eql('Invalid order query')
@@ -179,7 +179,7 @@ describe('/api', () => {
         });
         it('GET: 400 responds with an error when order_by is an invalid query', () => {
             return request(app)
-                .get('/api/articles?order_by=12345')
+                .get('/api/articles?order=12345')
                 .expect(400)
                 .then(res => {
                     expect(res.body.msg).to.eql('Invalid order query')
@@ -407,7 +407,7 @@ describe('/api', () => {
         });
         it('GET: 200 responds with an array of comments for the given article id sorted by a given column, defaulting to created_at', () => {
             return request(app)
-                .get('/api/articles/1/comments?sort_by=author&&order_by=desc')
+                .get('/api/articles/1/comments?sort_by=author&&order=desc')
                 .expect(200)
                 .then(res => {
                     expect(res.body.comments).to.be.an('Array')
@@ -417,7 +417,7 @@ describe('/api', () => {
         });
         it('GET: 400 responds with an error when entering an invalid path', () => {
             return request(app)
-                .get('/api/articles/banana/comments?sort_by=author&&order_by=desc')
+                .get('/api/articles/banana/comments?sort_by=author&&order=desc')
                 .expect(400)
                 .then(res => {
                     expect(res.body.msg).to.eql('Bad request: missing required fields')
@@ -425,10 +425,10 @@ describe('/api', () => {
         });
         it('GET: 404 Responds error when id valid but no correspond.', () => {
             return request(app)
-                .get('/api/articles/9999/comments?sort_by=author&&order_by=desc')
+                .get('/api/articles/9999/comments?sort_by=author&&order=desc')
                 .expect(404)
                 .then(res => {
-                    expect(res.body.msg).to.eql('Invalid ID - does not match')
+                    expect(res.body.msg).to.eql('Not found')
                 })
         });
         it('GET: 400 responds with error when inputting invalid sort_by query', () => {
@@ -439,9 +439,10 @@ describe('/api', () => {
                     expect(res.body.msg).to.eql('Invalid request: missing required fields')
                 })
         });
+
         it('GET: 200 will default sorted_by to "created_at" when no sort query is given', () => {
             return request(app)
-                .get('/api/articles/1/comments?order_by=desc')
+                .get('/api/articles/1/comments?order=desc')
                 .expect(200)
                 .then(res => {
                     expect(res.body.comments).to.be.an('Array')
@@ -452,11 +453,12 @@ describe('/api', () => {
         });
         it('GET: 200 can sort by ascending when requesting asc in the query', () => {
             return request(app)
-                .get('/api/articles/1/comments?order_by=asc')
+                .get('/api/articles/1/comments?order=asc')
                 .expect(200)
                 .then(res => {
                     expect(res.body.comments).to.be.an('Array')
                     res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
+                    expect(res.body.comments[0].comment_id).to.eql(18)
                 })
         });
 
@@ -472,17 +474,17 @@ describe('/api', () => {
                 })
         });
 
-        it('GET: 400 responds with an error when order_by is an invalid query', () => {
+        it('GET: 400 responds with an error when order is an invalid query', () => {
             return request(app)
-                .get('/api/articles/1/comments?order_by=potato')
+                .get('/api/articles/1/comments?order=potato')
                 .expect(400)
                 .then(res => {
                     expect(res.body.msg).to.eql('Invalid order query')
                 })
         });
-        it('GET: 400 responds with an error when order_by is an invalid query', () => {
+        it('GET: 400 responds with an error when order is an invalid query', () => {
             return request(app)
-                .get('/api/articles/1/comments?order_by=12345')
+                .get('/api/articles/1/comments?order=12345')
                 .expect(400)
                 .then(res => {
                     expect(res.body.msg).to.eql('Invalid order query')

@@ -46,10 +46,14 @@ exports.postArticle = (req, res, next) => {
 exports.getCommentsByArticleId = (req, res, next) => {
 
     const { article_id } = req.params
-    const { sort_by, order_by } = req.query
+    const { sort_by, order } = req.query
 
-    getAllCommentsForId(article_id, sort_by, order_by)
+    console.log(req.params)
+    console.log(req.query)
+
+    getAllCommentsForId(article_id, sort_by, order)
         .then(comment => {
+            console.log(comment)
             return res.status(200).send({ comments: comment })
         })
         .catch(err => {
@@ -60,10 +64,12 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.sendAllArticles = (req, res, next) => {
 
     const username = req.query.author
-    const { sort_by, order_by, topic } = req.query
+    const { sort_by, order, topic } = req.query
 
-    getAllArticles(sort_by, order_by, username, topic)
+
+    getAllArticles(sort_by, order, username, topic)
         .then(articles => {
+            // console.log(articles)
             return res.status(200).send({ articles })
         })
         .catch(err => {
