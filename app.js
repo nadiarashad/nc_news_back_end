@@ -7,7 +7,7 @@ const { handleCustomErrors, pSQLErrorsHandler, handle404s } = require('../be-nc-
 
 app.use('/api', apiRouter)
 
-app.use('/*', handle404s)
+app.use('/', handle404s)
 
 app.use(pSQLErrorsHandler)
 
