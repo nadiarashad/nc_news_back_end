@@ -2,7 +2,7 @@ const express = require('express')
 const app = express();
 app.use(express.json());
 const apiRouter = require('./routes/apiRouter')
-const { handleCustomErrors, pSQLErrorsHandler, handle404s } = require('../be-nc-news/errors/errors')
+const { handleCustomErrors, pSQLErrorsHandler, handle404s } = require('./errors/errors')
 
 
 app.use('/api', apiRouter)
