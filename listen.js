@@ -1,4 +1,4 @@
-const app = require('../../back_end/be-nc-news/app')
+const app = require('./app')
 
 // app.listen(9990, err => {
 //     if (err) console.log(err);
