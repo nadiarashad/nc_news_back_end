@@ -467,7 +467,7 @@ describe('/api', () => {
                 .get('/api/articles/1/comments')
                 .expect(200)
                 .then(res => {
-                    // console.log(res.body)
+
                     expect(res.body.comments).to.be.an('Array')
                     expect(res.body.comments[0]).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id'])
                     expect(res.body.comments[0].created_at).to.eql('2016-11-22T12:36:03.389+00:00')
@@ -498,7 +498,7 @@ describe('/api', () => {
                 .expect(200)
                 .then(res => {
                     expect(res.body.comments).to.be.an('Array')
-                    // res.body.comments.forEach(comments => expect(comments).to.have.all.keys(['body', 'author', 'votes', 'created_at', 'comment_id']))
+
                     expect(res.body.comments).to.eql([])
                 })
 
