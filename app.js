@@ -3,7 +3,9 @@ const app = express();
 app.use(express.json());
 const apiRouter = require('./routes/apiRouter')
 const { handleCustomErrors, pSQLErrorsHandler, handle404s } = require('./errors/errors')
+const cors = require('cors')
 
+app.use(cors())
 
 app.use('/api', apiRouter)
 
