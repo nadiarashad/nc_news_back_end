@@ -1,4 +1,4 @@
-const { updateVote, deleteComment } = require('../models/commentsModel')
+const { updateVote, deleteComment, getAllComments } = require('../models/commentsModel')
 
 exports.sendUpdatedVotes = (req, res, next) => {
 
@@ -24,5 +24,13 @@ exports.deleteCommentById = (req, res, next) => {
         })
         .catch(err => {
             next(err)
+        })
+}
+
+exports.sendAllComments = (req, res, next) => {
+
+    getAllComments()
+        .then(comments => {
+            return res.status(200).send({ comments: comments })
         })
 }

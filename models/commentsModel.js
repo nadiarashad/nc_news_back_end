@@ -20,6 +20,14 @@ exports.updateVote = (comment_id, inc_votes) => {
         })
 }
 
+exports.getAllComments = () => {
+
+    return knex.select('*').from('comments').then((allComments) => {
+        return allComments
+    })
+
+}
+
 
 exports.deleteComment = (comment_id) => {
 

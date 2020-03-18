@@ -579,6 +579,18 @@ describe('/api', () => {
 
     });
     describe('/comments', () => {
+
+        it.only('GET 200 responds with all comments', () => {
+            return request(app)
+                .get('/api/comments')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.comments).to.be.an('Array')
+                    // expect(res.body.msg).to.eql('Invalid request: missing required fields')
+                })
+        });
+
+
         describe('/:comment_id', () => {
             it('PATCH 200 increments the vote when passed a positive number ', () => {
                 return request(app)
