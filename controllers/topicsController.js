@@ -10,3 +10,16 @@ exports.sendTopics = (req, res, next) => {
             next(err)
         })
 }
+
+exports.sendAllArticlesForTopic = (req, res, next) => {
+
+    const { slug } = req.params
+
+    getArticlesforTopic(slug)
+        .then((articles) => {
+            return res.status(200).send({ articles })
+        })
+        .catch(err => {
+            next(err)
+        })
+}

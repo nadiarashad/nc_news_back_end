@@ -8,3 +8,12 @@ exports.getTopics = () => {
         })
 
 }
+
+
+exports.getArticlesforTopic = (slug) => {
+
+    return knex.select('*').from('articles').where('article.topic', '=', slug)
+        .then((allArticles) => {
+            return allArticles
+        })
+}
