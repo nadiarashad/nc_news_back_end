@@ -66,6 +66,15 @@ describe('/api', () => {
     });
 
     describe('/users', () => {
+        it.only('GET: 200 responds with an array of all users', () => {
+            return request(app)
+                .get('/api/users')
+                .expect(200)
+                .then(res => {
+                    expect(res.body.users).to.be.an('Array')
+                })
+        });
+
         describe('/:username', () => {
             it('GET: 200 responds with an object of the inputted username', () => {
                 return request(app)

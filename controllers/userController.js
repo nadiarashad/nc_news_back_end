@@ -1,4 +1,4 @@
-const { getUserInfo } = require('../models/userModel')
+const { getUserInfo, getUsers } = require('../models/userModel')
 
 
 
@@ -11,6 +11,16 @@ exports.sendUserinfoByUsername = (req, res, next) => {
             return res.status(200).send({ user: user })
         })
         .catch(err => {
+            next(err)
+        })
+}
+
+exports.sendUsers = (req, res, next) => {
+
+    getUsers()
+        .then(users => {
+            return res.status(200).send({ users: users })
+        }).catch(err => {
             next(err)
         })
 }

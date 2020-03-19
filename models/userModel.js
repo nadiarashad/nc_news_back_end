@@ -15,3 +15,8 @@ exports.getUserInfo = (username) => {
         })
 
 }
+
+exports.getUsers = () => {
+
+    return knex.select('*').from('users')
+}
