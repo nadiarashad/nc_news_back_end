@@ -19,10 +19,10 @@ Create a file named 'knexfile.js' in the root directory of the project, which co
 
 The file should be as follows:
 
-const { DB_URL } = process.env;
+    const { DB_URL } = process.env;
 
-module.exports = {
-  development: {
+    module.exports = {
+    development: {
     client: "pg",
     connection: {
       database: "nc_knews_dev"
@@ -35,9 +35,9 @@ module.exports = {
     seeds: {
       directory: "./seeds"
     }
-  },
+    },
 
-  test: {
+    test: {
     client: "pg",
     connection: {
       database: "nc_knews_test"
@@ -50,8 +50,8 @@ module.exports = {
     seeds: {
       directory: "./seeds"
     }
-  },
-  production: {
+    },
+    production: {
     client: "pg",
     connection: `${DB_URL}?ssl=true`,
     migrations: {
@@ -61,8 +61,8 @@ module.exports = {
         directory: "./seeds"
       }
     }
-  }
-};
+    }
+    };
 
 Run the terminal command npm run seed:run to create an empty database, run migrations files that will create a schema for the database, and seed the database with data from 'db/data/development-data'
 
@@ -72,25 +72,6 @@ The server can now be accessed via http requests; e.g. open this link in your we
 
 Running the tests
 To run the tests, run the command npm test in your terminal. This will drop any prior test database, create a new one with the latest db schema, and re-seed the test data from 'db/data/test-data' before running tests found in the file 'spec/endpoints.js'.
-
-A test explained
-    describe('/articles', () => {
-      it('GET status:200 responds with an array of articles', () => request
-        .get('/api/articles')
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.articles).to.be.an('array');
-          expect(body.articles).to.have.length(10);
-          expect(body.articles[0]).to.have.keys(
-            'author',
-            'title',
-            'article_id',
-            'votes',
-            'comment_count',
-            'created_at',
-            'topic',
-          );
-        }));
         
 Each describe block represents an endpoint on the api, and each it block creates a new valid or invalid http request to that endpoint. The API responds must match the assertions written in expect statements for the particular test to pass.
 
